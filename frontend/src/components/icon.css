@@ -1,0 +1,8 @@
+.my-div-icon {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+.active {
+  background-color: blue;
+}

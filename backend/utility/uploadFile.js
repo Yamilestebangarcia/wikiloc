@@ -26,7 +26,7 @@ const gpxFilter = function (req, file, cb) {
 const uploadMulter = multer({
   storage: storage,
   fileFilter: gpxFilter,
-  limits: { fileSize: 1500000 },
+  limits: { fileSize: 3000000 },
 }).single("file");
 
 export { uploadMulter, urlUpload };

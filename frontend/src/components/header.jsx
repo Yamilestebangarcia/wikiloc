@@ -20,10 +20,7 @@ function Header() {
   };
 
   const searchRute = () => {
-    const token = window.sessionStorage.getItem("token");
-    console.log(search);
-    console.log(token);
-    //peticion al servidor con el token y la palabra a buscar
+    navigate(`/app/search/?search=${search}`);
   };
 
   return (

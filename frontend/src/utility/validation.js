@@ -16,7 +16,7 @@ const validationFile = (file) => {
   return regFile.test(file);
 };
 const validationDifficulty = (difficulty) => {
-  const regDifficulty = /easy|medium|hard/;
+  const regDifficulty = /facil|media|dificil/;
   return regDifficulty.test(difficulty);
 };
 const validationDescription = (description) => {

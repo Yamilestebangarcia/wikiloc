@@ -1,9 +1,11 @@
 import { MapContainer, TileLayer, LayersControl, Marker } from "react-leaflet";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "./map.css";
 
 function MapSee({ mapCords, ruteData, cardData, setCardData }) {
+  const navigate = useNavigate();
   const icon = L.divIcon({
     iconSize: [8, 8],
     //darle estilos mas chulos
@@ -19,7 +21,7 @@ function MapSee({ mapCords, ruteData, cardData, setCardData }) {
 
   return (
     <div>
-      <MapContainer center={mapCords} zoom={13} attributionControl={false}>
+      <MapContainer center={mapCords} zoom={10} attributionControl={false}>
         <LayersControl>
           <BaseLayer name="maptiler outdoor" checked>
             <TileLayer url="https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=JApHX2LYyHexQw1jhT4J" />
@@ -47,10 +49,9 @@ function MapSee({ mapCords, ruteData, cardData, setCardData }) {
                     click: () => {
                       //manadar a una pagina diferente o no se como un na ventana emergente o un nuevo sitio en esta pagina
                       // donde se muestre toda la informacion
-                      console.log(ele._id);
+                      navigate(`/app/view?rute=${ele._id}`);
                     },
                     mouseover: (e) => {
-                      console.log();
                       cardData.sort((a) => {
                         if (ele._id === a._id) {
                           return -1;
@@ -58,7 +59,6 @@ function MapSee({ mapCords, ruteData, cardData, setCardData }) {
                           return 0;
                         }
                       });
-
                       setCardData([...cardData]);
                     },
                   }}

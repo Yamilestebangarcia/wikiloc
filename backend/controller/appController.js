@@ -1,5 +1,6 @@
 import { messageError } from "../utility/messageError.js";
 import multer from "multer";
+import fs from "fs";
 import {
   validationDifficulty,
   validationDescription,
@@ -14,6 +15,7 @@ import "../utility/dotenv.js";
 import Rute from "../db/ruta.js";
 import User from "../db/user.js";
 import { uploadMulter, urlUpload } from "../utility/uploadFile.js";
+import path from "path";
 
 const upload = (req, res) => {
   uploadMulter(req, res, async function (err) {
@@ -110,17 +112,110 @@ const seeMap = async (req, res) => {
   } catch (error) {
     return res.status(400).json(messageError.Token);
   }
+  try {
+    const rutes = await Rute.find().select({
+      title: 1,
+      distance: 1,
+      slopePositive: 1,
+      lat: 1,
+      lon: 1,
+    });
 
-  const rutes = await Rute.find().select({
-    title: 1,
-    distance: 1,
-    slopePositive: 1,
-    lat: 1,
-    lon: 1,
-  });
-
-  console.log(rutes);
-  res.status(200).json(rutes);
+    console.log(rutes);
+    res.status(200).json(rutes);
+  } catch (error) {
+    return res.status(500).json(messageError.Later);
+  }
 };
 
-export { upload, seeMap };
+const findRute = async (req, res) => {
+  const { token } = req.body;
+  const { search } = req.body;
+  if (!token) {
+    return res.status(400).json(messageError.Token);
+  }
+  try {
+    const findRute = await Rute.find(
+      {
+        title: { $regex: search, $options: "i" },
+      },
+      { title: 1, distance: 1, slopePositive: 1, lat: 1, lon: 1 }
+    );
+    console.log(await Rute.find({}, { title: 1 }));
+    console.log(findRute);
+    return res.status(200).json(findRute);
+  } catch (error) {
+    return res.status(500).json(messageError.Later);
+  }
+};
+const view = async (req, res) => {
+  const { token } = req.body;
+  const { idRute } = req.body;
+  if (!token) {
+    return res.status(400).json(messageError.Token);
+  }
+  try {
+    const ruteData = await Rute.findById(idRute, {
+      userName: 1,
+      difficulty: 1,
+      description: 1,
+      title: 1,
+      url: 1,
+      date: 1,
+      distance: 1,
+      slopePositive: 1,
+      slopeNegative: 1,
+      maximumHeight: 1,
+      minimunHeight: 1,
+      lat: 1,
+      lon: 1,
+    });
+
+    res.status(200).json(ruteData);
+  } catch (error) {
+    return res.status(500).json(messageError.Later);
+  }
+};
+const viewTrack = async (req, res) => {
+  const { token } = req.body;
+  const { idRute } = req.body;
+  if (!token) {
+    return res.status(400).json(messageError.Token);
+  }
+  try {
+    const ruteData = await Rute.findById(idRute, {
+      userName: 1,
+      difficulty: 1,
+      description: 1,
+      title: 1,
+      url: 1,
+      date: 1,
+      distance: 1,
+      slopePositive: 1,
+      slopeNegative: 1,
+      maximumHeight: 1,
+      minimunHeight: 1,
+      lat: 1,
+      lon: 1,
+    });
+    //leer archivo
+    console.log("leer");
+    let text;
+    try {
+      const pathUploads = path.join(
+        path.resolve(path.dirname("")),
+        "uploads",
+        ruteData.url
+      );
+
+      text = fs.readFileSync(pathUploads, "utf8");
+    } catch (err) {
+      console.log(err);
+    }
+
+    res.status(200).type("application/xml").send(text);
+  } catch (error) {
+    return res.status(500).json(messageError.Later);
+  }
+};
+export { upload, seeMap, findRute, view, viewTrack };

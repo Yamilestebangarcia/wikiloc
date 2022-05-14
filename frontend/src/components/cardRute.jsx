@@ -5,6 +5,7 @@ function CardRoute({ data }) {
         <h3>{data.title}</h3>
         <p>distancia: {data.distance}</p>
         <p>desnivel: {data.slopePositive}</p>
+        <p>desnivel: {data._id}</p>
       </div>
     </>
   );

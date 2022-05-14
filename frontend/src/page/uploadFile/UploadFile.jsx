@@ -70,8 +70,8 @@ function UploadFile() {
   const sendFile = (e) => {
     SetErr("");
 
-    if (e.target.files[0].size > 1500000) {
-      //1.5M
+    if (e.target.files[0].size > 3000000) {
+      //3M
       SetClassname({ ...className, file: false });
       return SetErr("excede del tamaño máximo");
     }
@@ -160,7 +160,6 @@ function UploadFile() {
     dataForm.append("lat", gpx.firstcord.lat);
     dataForm.append("lon", gpx.firstcord.lon);
     dataForm.append("token", token);
-
     axios
       .post("http://localhost:3001/app/upload", dataForm)
       .then((res) => {
@@ -207,9 +206,9 @@ function UploadFile() {
           value={data.difficulty}
         >
           <option value="choose">elige la dificultad de la ruta</option>
-          <option value="easy">Facil</option>
-          <option value="medium">Media</option>
-          <option value="hard">Dificil</option>
+          <option value="facil">Facil</option>
+          <option value="media">Media</option>
+          <option value="dificil">Dificil</option>
         </select>
         <textarea
           name="description"

@@ -10,6 +10,8 @@ import ResetPass from "./page/resetPass/ResetPass";
 import DeleteVerified from "./page/deleteVerified/DeleteVerified";
 import UploadFile from "./page/uploadFile/UploadFile";
 import SeeMap from "./page/seeMap/seeMap";
+import Search from "./page/search/search";
+import ViewRute from "./page/viewRute/viewrute";
 
 function App() {
   return (
@@ -38,7 +40,22 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/app/search"
+        element={
+          <ProtectedRoute>
+            <Search />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/app/view"
+        element={
+          <ProtectedRoute>
+            <ViewRute />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/app"
         element={
@@ -47,6 +64,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
       <Route path="/register" element={<Register />} />
       <Route path="/reset" element={<Reset />} />
       <Route path="/resetPass" element={<ResetPass />} />

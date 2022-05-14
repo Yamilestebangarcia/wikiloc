@@ -66,7 +66,7 @@ function seeMap() {
     <>
       <Header />
       <h2>buscar rutas en el mapa</h2>
-      <p>mapa</p>
+
       <div>
         {ruteData ? (
           <MapSee

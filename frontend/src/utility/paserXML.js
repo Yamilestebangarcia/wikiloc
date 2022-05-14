@@ -8,6 +8,7 @@ export const paserXML = (text) => {
   const slope = getSlope(xmlDoc);
   const distanceAndTrack = getDistanceAndTrack(xmlDoc);
 
+  console.log(slope);
   return {
     date,
     firstcord,
@@ -30,7 +31,7 @@ function getTime(xmlDoc) {
     return undefined;
   }
 }
-function firstCord(xmlDoc) {
+export function firstCord(xmlDoc) {
   const trkptData = { elev: [], cord: [] };
   const trk = xmlDoc.getElementsByTagName("trk");
   const Trkpt = trk
@@ -40,7 +41,9 @@ function firstCord(xmlDoc) {
     .childNodes.item(1);
   return { lat: Trkpt.getAttribute("lat"), lon: Trkpt.getAttribute("lon") };
 }
-
+function getDesnivel(xmlDoc) {
+  return gpxCalcElevationGain(xmlDoc);
+}
 function getSlope(xmlDoc) {
   const trk = xmlDoc.getElementsByTagName("trk");
   const nodesTrkpt = trk
@@ -88,7 +91,7 @@ function getSlope(xmlDoc) {
     max: Math.round(MinimunHeight),
   };
 }
-function getDistanceAndTrack(xmlDoc) {
+export function getDistanceAndTrack(xmlDoc) {
   let distance = 0;
   const track = [];
   const trkpt = xmlDoc.getElementsByTagName("trkpt");
@@ -104,6 +107,39 @@ function getDistanceAndTrack(xmlDoc) {
     );
   }
   return { distance: Math.round(distance * 100) / 100, track };
+}
+
+export function getTrackSlope(xmlDoc) {
+  const trackSlope = [];
+  const nodeEle = xmlDoc.getElementsByTagName("ele");
+  for (let i = 0; i < nodeEle.length; i++) {
+    if (i % 2 !== 0) {
+      trackSlope.push(parseFloat(nodeEle[i].innerHTML));
+    }
+  }
+  return trackSlope;
+}
+export function getTrackMinElevCord(xmlDoc) {
+  const track = [];
+  const trkpt = xmlDoc.getElementsByTagName("trkpt");
+  let elev;
+  let ele;
+  for (let index = 0; index < trkpt.length; index++) {
+    ele = trkpt[index].childNodes[0].textContent;
+    if (index === 0) {
+      elev = ele;
+    }
+    if (Math.abs(elev - ele) > 2) {
+      track.push({
+        lat: trkpt[index].getAttribute("lat"),
+        lon: trkpt[index].getAttribute("lon"),
+        ele: ele,
+      });
+      elev = ele;
+    }
+  }
+
+  return track;
 }
 
 const distanceTwoPoints = ([lat1, lon1], [lat2, lon2]) => {
