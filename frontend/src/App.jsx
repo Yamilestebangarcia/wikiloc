@@ -12,6 +12,7 @@ import UploadFile from "./page/uploadFile/UploadFile";
 import SeeMap from "./page/seeMap/seeMap";
 import Search from "./page/search/search";
 import ViewRute from "./page/viewRute/viewrute";
+import Follow from "./page/follow/Follow";
 
 function App() {
   return (
@@ -53,6 +54,14 @@ function App() {
         element={
           <ProtectedRoute>
             <ViewRute />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/app/follow"
+        element={
+          <ProtectedRoute>
+            <Follow />
           </ProtectedRoute>
         }
       />

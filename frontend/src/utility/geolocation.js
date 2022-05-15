@@ -16,5 +16,11 @@ function getPosition() {
     navigator.geolocation.getCurrentPosition(res, rej);
   });
 }
+function getWatchPosition() {
+  // Simple wrapper
+  return new Promise((res, rej) => {
+    navigator.geolocation.watchPosition(res, rej, { enableHighAccuracy: true });
+  });
+}
 
-export { getPosition };
+export { getPosition, getWatchPosition };

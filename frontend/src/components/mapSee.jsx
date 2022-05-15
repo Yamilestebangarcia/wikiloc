@@ -8,7 +8,7 @@ function MapSee({ mapCords, ruteData, cardData, setCardData }) {
   const navigate = useNavigate();
   const icon = L.divIcon({
     iconSize: [8, 8],
-    //darle estilos mas chulos
+    className: "search",
   });
 
   const { BaseLayer } = LayersControl;

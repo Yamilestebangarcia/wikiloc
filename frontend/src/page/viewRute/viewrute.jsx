@@ -72,6 +72,14 @@ function ViewRute() {
       {mapCords && track && trackSlope ? (
         <>
           <h1>{mapCords.title}</h1>
+
+          <button
+            onClick={() => {
+              navigate(`../app/follow?id=${mapCords._id}`);
+            }}
+          >
+            Seguir Ruta
+          </button>
           <MapView mapCords={mapCords.mapCords} track={track} />
           <p>{mapCords.description}</p>
           <Chart track={trackSlope}></Chart>

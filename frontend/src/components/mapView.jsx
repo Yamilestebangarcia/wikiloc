@@ -1,4 +1,3 @@
-import "./icon.css";
 import {
   MapContainer,
   TileLayer,
@@ -7,9 +6,9 @@ import {
   /*  Marker, */
 } from "react-leaflet";
 
-import L from "leaflet";
+/*import L from "leaflet";
 
-/* const icon = L.divIcon({
+ const icon = L.divIcon({
   iconSize: [8, 8],
   className: "my-div-icon",
   //darle estilos mas chulos

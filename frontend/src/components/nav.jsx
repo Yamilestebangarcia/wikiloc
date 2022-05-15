@@ -14,12 +14,6 @@ function Nav() {
       >
         Subir ruta
       </NavLink>
-      <NavLink
-        className={(isActive) => "nav-link" + (!isActive ? " unselected" : "")}
-        to="/app/search"
-      >
-        buscar ruta
-      </NavLink>
     </nav>
   );
 }
