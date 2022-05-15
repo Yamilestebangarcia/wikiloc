@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import MapFollow from "../../components/mapFollow";
 import { getTrackMinElevCord } from "../../utility/paserXML";
 import { getWatchPosition } from "../../utility/geolocation";
+import Btn from "../../components/btn";
 
 function Follow() {
   const [searchParams] = useSearchParams();
@@ -63,14 +64,12 @@ function Follow() {
             marker={position}
             getPosition={getPosition}
           />
-
-          <button
-            onClick={() => {
+          <Btn
+            click={() => {
               setFull(true);
             }}
-          >
-            pantalla completa
-          </button>
+            text="pantalla completa"
+          />
 
           {position ? (
             <>

@@ -6,6 +6,7 @@ import MapView from "../../components/mapView";
 import { useNavigate } from "react-router-dom";
 import { getTrackMinElevCord } from "../../utility/paserXML";
 import Chart from "../../components/chart";
+import Btn from "../../components/btn";
 
 function ViewRute() {
   const navigate = useNavigate();
@@ -72,14 +73,13 @@ function ViewRute() {
       {mapCords && track && trackSlope ? (
         <>
           <h1>{mapCords.title}</h1>
-
-          <button
-            onClick={() => {
+          <Btn
+            click={() => {
               navigate(`../app/follow?id=${mapCords._id}`);
             }}
-          >
-            Seguir Ruta
-          </button>
+            text="Seguir Ruta"
+          />
+
           <MapView mapCords={mapCords.mapCords} track={track} />
           <p>{mapCords.description}</p>
           <Chart track={trackSlope}></Chart>

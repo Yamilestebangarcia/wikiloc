@@ -48,7 +48,6 @@ function Search() {
     <>
       <Header />
       <h2> busquedas encontradas de {search}</h2>
-      {console.log(!ruteFind)}
 
       {ruteFind ? (
         ruteFind === "no" ? (
