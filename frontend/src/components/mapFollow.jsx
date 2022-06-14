@@ -1,71 +1,68 @@
-import {
-  MapContainer,
-  TileLayer,
-  LayersControl,
-  Polyline,
-  Marker,
-  ScaleControl,
-} from "react-leaflet";
-import * as L from "leaflet";
-import flechaGps from "../assets/img/flechaGps.svg";
-import iconGps from "../assets/img/iconGps.svg";
+import React, { useEffect, useRef, useState } from "react";
+import L from "leaflet";
+import flechaGps from "./../assets/img/flechaGps.svg";
+import styles from "./MapFollow.module.css";
+import "leaflet/dist/leaflet.css";
+import { useMap, useMarket, usePolyline, useScale } from "../service/leaflet";
 
-const icon = new L.Icon({
-  iconSize: [14, 14],
-  iconUrl: flechaGps,
-  //html: `<img src='${flechaGps}'/>`,
-  className: "iconHere",
-  //darle estilos mas chulos
-});
-const { BaseLayer } = LayersControl;
+function MapFollow({ mapCords, track, position, full, children }) {
+  //creo la polyline
+  const polyline = [];
+  for (let index = 0; index < track.length; index++) {
+    polyline.push([track[index].lat, track[index].lon]);
+  }
 
-function MapFollow({ mapCords, track, marker, getPosition }) {
+  const icon = new L.Icon({
+    iconSize: [14, 14],
+    iconUrl: flechaGps,
+    className: "iconHere",
+  });
+
+  //refs:
+  const mapElementRef = useRef(null);
+  const mapRef = useRef(null);
+  const polylineRef = useRef(null);
+  const markerRef = useRef(null);
+  const featureGroupRef = useRef(null);
+
+  // Map and plugins
+  useEffect(() => {
+    //map
+    mapRef.current = useMap(mapCords, 12, mapElementRef);
+
+    // Add polyline
+    polylineRef.current = usePolyline(mapRef, polyline);
+
+    //add feature group
+    featureGroupRef.current = L.featureGroup([polylineRef.current]).addTo(
+      mapRef.current
+    );
+    mapRef.current.fitBounds(featureGroupRef.current.getBounds());
+
+    //Scale
+    useScale(mapRef);
+  }, []);
+
+  useEffect(() => {
+    if (position) {
+      markerRef.current = L.marker([position.latitude, position.longitude], {
+        icon: icon,
+      });
+      featureGroupRef.current.addLayer(markerRef.current);
+      mapRef.current.fitBounds(featureGroupRef.current.getBounds());
+    }
+  }, [position]);
+
   return (
-    <MapContainer center={mapCords} zoom={10} attributionControl={false}>
-      <img
-        onClick={getPosition}
-        src={iconGps}
-        style={{
-          boxSizing: "border-box",
-          height: 44,
-          width: 44,
-          position: "absolute",
-          right: 0,
-          bottom: 0,
-          zIndex: 1000,
-          marginRight: 10,
-          marginBottom: 10,
-          border: "2px solid rgba(0,0,0,0.2)",
-          backgroundClip: "padding-box",
-          borderRadius: 5,
-          backgroundColor: "#fff",
-          padding: 8,
-        }}
-        alt="posicion Actual"
-      ></img>
-      {/* pointerEvents: "none",
-          cursor: "default", */}
+    <>
+      <div ref={mapElementRef} className={full ? styles.mapFull : styles.map}>
+        {children[0]}
+        {children[1]}
 
-      <ScaleControl position="bottomleft" imperial={false} />
-      <LayersControl>
-        <BaseLayer name="maptiler outdoor" checked>
-          <TileLayer url="https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=JApHX2LYyHexQw1jhT4J" />
-        </BaseLayer>
-        <BaseLayer name="openstreetmap">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        </BaseLayer>
-        <BaseLayer name="landscape">
-          <TileLayer url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=467b139a90ae425baeeb1a2de27167bd" />
-        </BaseLayer>
-        <BaseLayer name="outdoors">
-          <TileLayer url="https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=467b139a90ae425baeeb1a2de27167bd" />
-        </BaseLayer>
-      </LayersControl>
-      <Polyline pathOptions={{ color: "blue" }} positions={track} />
-      {marker ? (
-        <Marker position={[marker.latitude, marker.longitude]} icon={icon} />
-      ) : null}
-    </MapContainer>
+        {position ? children[2] : null}
+      </div>
+    </>
   );
 }
+
 export default MapFollow;

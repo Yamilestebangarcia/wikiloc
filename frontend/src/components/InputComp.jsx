@@ -1,20 +1,32 @@
-import "./inputComp.css";
+import styles from "./inputComp.module.css";
 function InputComp({
+  refPro,
   handlerChange,
   value,
   type,
   placeholder,
   name,
-  className,
+  controlClass,
+  presskey,
 }) {
   return (
     <input
+      ref={refPro}
       type={type}
       placeholder={placeholder}
-      className={className}
+      className={
+        (typeof controlClass !== "boolean"
+          ? controlClass
+          : controlClass
+          ? styles.correct
+          : styles.incorrect) +
+        " " +
+        styles.inputComp
+      }
       name={name}
       value={value}
       onChange={handlerChange}
+      onKeyDown={presskey}
     ></input>
   );
 }

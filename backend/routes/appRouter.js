@@ -5,10 +5,11 @@ import {
   findRute,
   view,
   viewTrack,
+  index,
 } from "../controller/appController.js";
 
 const appRouter = Router();
-
+appRouter.post("/index", index);
 appRouter.post("/upload", upload);
 appRouter.post("/seemap", seeMap);
 appRouter.post("/find", findRute);

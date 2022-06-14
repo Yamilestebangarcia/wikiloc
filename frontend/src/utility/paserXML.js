@@ -8,7 +8,6 @@ export const paserXML = (text) => {
   const slope = getSlope(xmlDoc);
   const distanceAndTrack = getDistanceAndTrack(xmlDoc);
 
-  console.log(slope);
   return {
     date,
     firstcord,
@@ -124,8 +123,10 @@ export function getTrackMinElevCord(xmlDoc) {
   const trkpt = xmlDoc.getElementsByTagName("trkpt");
   let elev;
   let ele;
+
   for (let index = 0; index < trkpt.length; index++) {
-    ele = trkpt[index].childNodes[0].textContent;
+    ele = trkpt[index].childNodes[1].textContent;
+
     if (index === 0) {
       elev = ele;
     }

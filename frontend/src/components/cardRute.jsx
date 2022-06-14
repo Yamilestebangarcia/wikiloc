@@ -1,11 +1,17 @@
-function CardRoute({ data }) {
+import styles from "./cardRute.module.css";
+function CardRoute({ data, setHoverCard }) {
   return (
     <>
-      <div>
-        <h3>{data.title}</h3>
-        <p>distancia: {data.distance}</p>
-        <p>desnivel: {data.slopePositive}</p>
-        <p>desnivel: {data._id}</p>
+      <div className={styles.card} onMouseOver={() => setHoverCard(data._id)}>
+        <a
+          href={"http://localhost:3000/app/view?rute=" + data._id}
+          className={styles.aCard}
+        >
+          <h3>{data.title}</h3>
+          <p>Distancia: {data.distance}</p>
+          <p>Desnivel: {data.slopePositive}</p>
+          <p>Dificultad: {data.difficulty}</p>
+        </a>
       </div>
     </>
   );

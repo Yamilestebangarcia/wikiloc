@@ -1,46 +1,109 @@
+import { useEffect, useRef } from "react";
+import L from "leaflet";
+import glify from "leaflet.glify";
+
+import styles from "./mapView.module.css";
 import {
-  MapContainer,
-  TileLayer,
-  LayersControl,
-  Polyline,
-  /*  Marker, */
-} from "react-leaflet";
+  useLeafletEvent,
+  useMap,
+  useMarket,
+  usePolyline,
+} from "../service/leaflet";
 
-/*import L from "leaflet";
+function MapView({ mapCords, track, setPoint, pointChart }) {
+  const geojson = { type: "FeatureCollection", features: [] };
+  const polyline = [];
 
- const icon = L.divIcon({
-  iconSize: [8, 8],
-  className: "my-div-icon",
-  //darle estilos mas chulos
-}); */
-const { BaseLayer } = LayersControl;
-
-function MapView({ mapCords, track }) {
-  /*   const polyline = [];
-
-  track.forEach((cord) => {
-    polyline.push([cord.lat, cord.lon]);
+  const icon = L.divIcon({
+    iconSize: [12, 12],
+    className: styles.icon,
+    //darle estilos mas chulos
   });
- */
+
+  for (let index = 0; index < track.length; index++) {
+    geojson.features.push({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          parseFloat(track[index].lat),
+          parseFloat(track[index].lon),
+        ],
+      },
+      properties: {
+        position: index,
+      },
+    });
+    polyline.push([track[index].lat, track[index].lon]);
+  }
+
+  // Map refs:
+
+  const polylineRef = useRef(null);
+  const mapRef = useRef(null);
+  const marketRef = useRef(null);
+  const mapElementRef = useRef(null);
+
+  //map and plugin
+
+  useEffect(() => {
+    // Map
+    mapRef.current = useMap(mapCords, 10, mapElementRef);
+
+    //map event
+    useLeafletEvent(
+      "click",
+      function (ev) {
+        console.log("s");
+        if (marketRef.current !== null) {
+          marketRef.current.remove();
+          marketRef.current = null;
+        }
+      },
+      mapRef
+    );
+
+    //glify points
+    glify.points({
+      map: mapRef.current,
+      data: geojson,
+      size: 10,
+      color: { r: 0, g: 0, b: 255, a: 1 },
+      className: styles.point,
+      click: (e, feature) => {
+        setPoint(feature.properties.position);
+      },
+    });
+
+    //polyline
+    polylineRef.current = usePolyline(mapRef, polyline);
+    //center la polyline in of map
+    mapRef.current.fitBounds(polylineRef.current.getBounds());
+  }, []);
+
+  useEffect(() => {
+    if (pointChart) {
+      if (marketRef.current === null) {
+        marketRef.current = useMarket(
+          mapRef,
+          polyline[pointChart],
+          styles.icon,
+          [12, 12]
+        );
+      } else {
+        marketRef.current.setLatLng(polyline[pointChart]);
+      }
+    }
+  }, [pointChart]);
+
   return (
-    <MapContainer center={mapCords} zoom={10} attributionControl={false}>
-      <LayersControl>
-        <BaseLayer name="maptiler outdoor" checked>
-          <TileLayer url="https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=JApHX2LYyHexQw1jhT4J" />
-        </BaseLayer>
-        <BaseLayer name="openstreetmap">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        </BaseLayer>
-        <BaseLayer name="landscape">
-          <TileLayer url="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=467b139a90ae425baeeb1a2de27167bd" />
-        </BaseLayer>
-        <BaseLayer name="outdoors">
-          <TileLayer url="https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=467b139a90ae425baeeb1a2de27167bd" />
-        </BaseLayer>
-      </LayersControl>
-      <Polyline pathOptions={{ color: "blue" }} positions={track} />
-    </MapContainer>
+    <>
+      <div ref={mapElementRef} className={styles.map} />
+    </>
   );
 }
 
 export default MapView;
+
+//37.13095924817025661468505859375;
+//37.13093435391784;

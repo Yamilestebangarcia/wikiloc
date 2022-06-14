@@ -1,17 +1,22 @@
 import { useState } from "react";
-import Btn from "../../components/btn.jsx";
-import H1 from "../../components/h1.jsx";
-
-import ComponentLink from "../../components/link.jsx";
-import PError from "../../components/pError.jsx";
 import {
   validationEmail,
   validationPass,
   validationName,
 } from "../../utility/validation.js";
+import { useFetchRegister } from "../../service/useFetch.jsx";
+
+import Btn from "../../components/btn.jsx";
+import H1 from "../../components/h1.jsx";
+import ComponentLink from "../../components/link.jsx";
+import PError from "../../components/pError.jsx";
 import InputComp from "../../components/InputComp";
+import FormLogin from "../../components/formLogin.jsx";
+import PInfo from "../../components/Info.jsx";
+import Spinner from "../../components/spinner.jsx";
 
 function Register() {
+  //state
   const [className, SetClassname] = useState({
     email: false,
     pass1: false,
@@ -20,6 +25,7 @@ function Register() {
   });
   const [err, setErr] = useState();
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     email: "",
     pass1: "",
@@ -27,6 +33,7 @@ function Register() {
     name: "",
   });
 
+  //handle state and validation
   const handleInputChange = (event) => {
     if (event.target.name === "email") {
       SetClassname({
@@ -54,8 +61,11 @@ function Register() {
     });
   };
 
+  //submitValidation and fecht
   const submitData = (event) => {
     event.preventDefault();
+    setErr(null);
+    setLoading(true);
     if (
       !validationEmail(data.email) ||
       !validationPass(data.pass1) ||
@@ -63,51 +73,38 @@ function Register() {
       !validationName(data.name)
     ) {
       setErr("Nombre,email o password incorrecto");
+      setLoading(false);
     } else {
       if (data.pass1 !== data.pass2) {
         setErr("los password no coinciden");
+        setLoading(false);
       } else {
-        fetchData({ email: data.email, pass: data.pass1, name: data.name });
-      }
-    }
-  };
-
-  function fetchData(data) {
-    console.log(data);
-    return fetch("http://localhost:3001/login/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        if (res.status !== 201) {
-          return res.json();
-        } else {
-          setSuccess(true);
-        }
-      })
-      .then((res) => {
-        if (res !== undefined) {
-          setErr(res.err);
+        useFetchRegister(
+          "http://localhost:3001/login/register",
+          { email: data.email, pass: data.pass1, name: data.name },
+          setLoading,
+          setErr
+        ).then((res) => {
+          if (res) {
+            setSuccess(true);
+          }
           setData({
             email: "",
             pass1: "",
             pass2: "",
             name: "",
           });
-        }
-      })
-      .catch((err) => console.log(err));
-  }
+        });
+      }
+    }
+  };
 
   return (
     <>
       <H1 text="Register"></H1>
-      <form>
+      <FormLogin>
         <InputComp
-          className={className.email ? "correct" : "incorrect"}
+          controlClass={className.email}
           type="text"
           placeholder="Email"
           handlerChange={handleInputChange}
@@ -115,7 +112,7 @@ function Register() {
           value={data.email}
         ></InputComp>
         <InputComp
-          className={className.pass1 ? "correct" : "incorrect"}
+          controlClass={className.pass1}
           type="password"
           placeholder="Contraseña"
           handlerChange={handleInputChange}
@@ -124,7 +121,7 @@ function Register() {
         ></InputComp>
 
         <InputComp
-          className={className.pass2 ? "correct" : "incorrect"}
+          controlClass={className.pass2}
           type="password"
           placeholder="Contraseña"
           handlerChange={handleInputChange}
@@ -133,7 +130,7 @@ function Register() {
         ></InputComp>
 
         <InputComp
-          className={className.name ? "correct" : "incorrect"}
+          controlClass={className.name}
           type="text"
           placeholder="Nombre"
           handlerChange={handleInputChange}
@@ -142,23 +139,22 @@ function Register() {
         ></InputComp>
 
         <Btn text="enviar" click={submitData}></Btn>
+        {success ? (
+          <PInfo
+            info={
+              "Registrado correctamente, se ha enviado un correo para que valides tu email"
+            }
+          ></PInfo>
+        ) : null}
+
+        <Spinner controlClass={loading}></Spinner>
+        <PError err={err}></PError>
         <ComponentLink text="¿Logueate?" url="/"></ComponentLink>
         <ComponentLink
           text="¿Olvidaste contraseña?"
           url="/reset"
         ></ComponentLink>
-      </form>
-      {success ? (
-        <>
-          <PError
-            err={
-              "Registrado correctamente, se ha enviado un correo para que valides tu email"
-            }
-          ></PError>
-          <ComponentLink url="/" text="Loguearse"></ComponentLink>
-        </>
-      ) : null}
-      <PError err={err}></PError>
+      </FormLogin>
     </>
   );
 }

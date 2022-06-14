@@ -1,0 +1,43 @@
+.info {
+  width: 50vw;
+}
+
+.select {
+  width: 50px;
+
+  border-left: none;
+  border-top: none;
+  border-right: none;
+  outline: none;
+  margin-bottom: 25px;
+  margin-left: 20px;
+  padding: 5px;
+  border-radius: 6px 6px 0 0;
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-border-radius: 6px 6px 0 0;
+  -ms-border-radius: 6px 6px 0 0;
+  -o-border-radius: 6px 6px 0 0;
+  font-family: var(--fontFamily);
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--verde);
+}
+.select::placeholder {
+  color: inherit;
+}
+.select:focus {
+  background-color: var(--verde);
+  color: var(--blanco);
+}
+.controlerPage {
+  display: flex;
+  justify-content: center;
+  gap: 40vw;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

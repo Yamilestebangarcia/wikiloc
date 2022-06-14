@@ -6,6 +6,8 @@ export const messageError = {
   Email: { err: "email incorrecto" },
   Later: { err: "error, intentelo mas tarde" },
   Token: { err: "token no valido" },
+  DataBase: { err: "error base de datos, intentelo mas tarde" },
+  NotFile: { err: "error no se encuentra el fichero" },
   Verification: {
     err: " debes verificar el email, se ha mandando un correo de verificación",
   },

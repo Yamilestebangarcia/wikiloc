@@ -12,8 +12,8 @@ import {
 } from "../utility/validation.js";
 import jwt from "jsonwebtoken";
 import "../utility/dotenv.js";
-import Rute from "../db/ruta.js";
-import User from "../db/user.js";
+import Rute from "../db/models/ruta.js";
+import User from "../db/models/user.js";
 import { uploadMulter, urlUpload } from "../utility/uploadFile.js";
 import path from "path";
 
@@ -31,7 +31,7 @@ const upload = (req, res) => {
     const { max } = req.body;
     const { negative } = req.body;
     const { positive } = req.body;
-    console.log(req.boy);
+
     if (
       !validationName(title) |
       !validationDifficulty(difficulty) |
@@ -66,8 +66,9 @@ const upload = (req, res) => {
     }
 
     try {
+      console.log("token", token);
       const decoded = jwt.verify(token, process.env.secret);
-      console.log(decoded);
+      console.log("decode", decoded);
       const UserFind = await User.findById(decoded.id);
 
       const newRute = Rute({
@@ -90,7 +91,7 @@ const upload = (req, res) => {
       const saveRute = await newRute.save();
       console.log(saveRute);
     } catch (error) {
-      return res.status(400).json(messageError.Token);
+      return res.status(401).json(messageError.Token);
     }
     res.status(200);
     res.json({ message: "ok" });
@@ -101,16 +102,19 @@ const seeMap = async (req, res) => {
   const { token } = req.body;
 
   if (!token) {
-    return res.status(400).json(messageError.Token);
+    console.log("1");
+    return res.status(401).json(messageError.Token);
   }
   try {
     const decoded = jwt.verify(token, process.env.secret);
 
     if (!decoded.id) {
-      return res.status(400).json(messageError.Token);
+      console.log("2");
+      return res.status(401).json(messageError.Token);
     }
   } catch (error) {
-    return res.status(400).json(messageError.Token);
+    console.log("3");
+    return res.status(401).json(messageError.Token);
   }
   try {
     const rutes = await Rute.find().select({
@@ -132,17 +136,26 @@ const findRute = async (req, res) => {
   const { token } = req.body;
   const { search } = req.body;
   if (!token) {
-    return res.status(400).json(messageError.Token);
+    return res.status(401).json(messageError.Token);
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
   }
   try {
     const findRute = await Rute.find(
       {
         title: { $regex: search, $options: "i" },
       },
-      { title: 1, distance: 1, slopePositive: 1, lat: 1, lon: 1 }
+      { title: 1, distance: 1, slopePositive: 1, lat: 1, lon: 1, difficulty: 1 }
     );
-    console.log(await Rute.find({}, { title: 1 }));
-    console.log(findRute);
+    /*     console.log(await Rute.find({}, { title: 1 }));
+    console.log(findRute); */
     return res.status(200).json(findRute);
   } catch (error) {
     return res.status(500).json(messageError.Later);
@@ -152,8 +165,18 @@ const view = async (req, res) => {
   const { token } = req.body;
   const { idRute } = req.body;
   if (!token) {
-    return res.status(400).json(messageError.Token);
+    return res.status(401).json(messageError.Token);
   }
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
+  }
+
   try {
     const ruteData = await Rute.findById(idRute, {
       userName: 1,
@@ -180,7 +203,16 @@ const viewTrack = async (req, res) => {
   const { token } = req.body;
   const { idRute } = req.body;
   if (!token) {
-    return res.status(400).json(messageError.Token);
+    return res.status(401).json(messageError.Token);
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
   }
   try {
     const ruteData = await Rute.findById(idRute, {
@@ -198,8 +230,7 @@ const viewTrack = async (req, res) => {
       lat: 1,
       lon: 1,
     });
-    //leer archivo
-    console.log("leer");
+
     let text;
     try {
       const pathUploads = path.join(
@@ -210,7 +241,7 @@ const viewTrack = async (req, res) => {
 
       text = fs.readFileSync(pathUploads, "utf8");
     } catch (err) {
-      console.log(err);
+      return res.status(500).json(messageError.NotFile);
     }
 
     res.status(200).type("application/xml").send(text);
@@ -218,4 +249,98 @@ const viewTrack = async (req, res) => {
     return res.status(500).json(messageError.Later);
   }
 };
-export { upload, seeMap, findRute, view, viewTrack };
+
+const index = async (req, res) => {
+  let decoded;
+  const { limit } = req.body;
+  const { token } = req.body;
+  const { skip } = req.body;
+
+  if (!token) {
+    return res.status(401).json(messageError.Token);
+  }
+  try {
+    decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
+  }
+  try {
+    /*    const findRutes = await Rute.find(
+      {
+        user: decoded.id,
+      },
+      {
+        difficulty: 1,
+        description: 1,
+        title: 1,
+        distance: 1,
+        slopePositive: 1,
+        lat: 1,
+        lon: 1,
+        date: 1,
+      }
+    ); */
+
+    let findRutes;
+    if (skip) {
+      findRutes = await Rute.find(
+        {
+          user: decoded.id,
+        },
+        {
+          difficulty: 1,
+          description: 1,
+          title: 1,
+          distance: 1,
+          slopePositive: 1,
+          lat: 1,
+          lon: 1,
+          date: 1,
+        }
+      )
+        .skip(skip)
+        .sort({
+          _id: -1,
+        })
+        .limit(limit);
+      return res.status(200).json({ rute: findRutes, skip });
+    } else {
+      const skip = 0;
+      const elements = (findRutes = await Rute.find(
+        {
+          user: decoded.id,
+        },
+        {}
+      ).count());
+
+      findRutes = await Rute.find(
+        {
+          user: decoded.id,
+        },
+        {
+          difficulty: 1,
+          description: 1,
+          title: 1,
+          distance: 1,
+          slopePositive: 1,
+          lat: 1,
+          lon: 1,
+          date: 1,
+        }
+      )
+        .skip(skip)
+        .sort({
+          _id: -1,
+        })
+        .limit(limit);
+      return res.status(200).json({ rute: findRutes, skip, elements });
+    }
+  } catch (error) {
+    return res.status(500).json(messageError.DataBase);
+  }
+};
+export { upload, seeMap, findRute, view, viewTrack, index };

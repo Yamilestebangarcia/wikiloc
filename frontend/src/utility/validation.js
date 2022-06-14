@@ -8,7 +8,7 @@ const validationPass = (pass) => {
   return regPass.test(pass);
 };
 const validationName = (name) => {
-  const regPass = /^[a-zA-ZñÑ(\s)]{2,16}$/;
+  const regPass = /^[a-zA-ZñÑ\s]{2,40}$/;
   return regPass.test(name);
 };
 const validationFile = (file) => {
@@ -21,7 +21,7 @@ const validationDifficulty = (difficulty) => {
 };
 const validationDescription = (description) => {
   const regDescription =
-    /^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/g;
+    /^[a-zA-Z0-9À-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-Z0-9À-ÿ\u00f1\u00d1\s]+$/g;
   return regDescription.test(description);
 };
 const validationDate = (date) => {

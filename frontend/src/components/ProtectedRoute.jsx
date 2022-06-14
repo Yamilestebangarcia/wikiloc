@@ -2,11 +2,13 @@ import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
   const token = window.sessionStorage.getItem("token");
-
-  if (token) {
+  console.log("protected");
+  console.log(token !== "null");
+  if (token !== "null") {
     return children;
+  } else {
+    return <Navigate to="/" replace />;
   }
-  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoute;

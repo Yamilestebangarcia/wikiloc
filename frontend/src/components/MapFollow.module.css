@@ -1,0 +1,15 @@
+.map {
+  position: absolute;
+  width: 98%;
+  height: 86vh;
+  margin-left: 1%;
+  margin-right: 1%;
+  overflow: hidden;
+}
+
+.mapFull {
+  overflow: hidden;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}

@@ -1,0 +1,26 @@
+.line {
+  fill: none;
+  stroke: #11a3d8;
+  stroke-width: 1.2;
+}
+.dot {
+  fill: #989a99;
+  stroke: #fff;
+}
+.tick > line.currentColor {
+  stroke: #989a99;
+}
+.x.axis > .tick > line {
+  stroke: white;
+}
+.x.axis > .domain,
+.y.axis > .domain {
+  stroke: #989a99;
+}
+.y.axis > .tick > line {
+  stroke: #989a99;
+}
+.y.axis > .tick > text,
+.x.axis > .tick > text {
+  color: #989a99;
+}

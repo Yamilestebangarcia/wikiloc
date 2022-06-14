@@ -1,4 +1,4 @@
-import User from "../db/user.js";
+import User from "../db/models/user.js";
 import {
   validationEmail,
   validationPass,
@@ -66,7 +66,7 @@ const authRegister = async (req, res) => {
   const { email } = req.body;
   const { pass } = req.body;
   const { name } = req.body;
-  console.log("si");
+
   if (
     !validationEmail(email) ||
     !validationPass(pass) ||
@@ -158,7 +158,6 @@ const authUpdate = async (req, res) => {
   }
 
   if (!token) {
-    console.log("no token");
     return res.status(403).send(messageError.Token);
   }
 
@@ -227,7 +226,6 @@ const resetPassEmail = async (req, res) => {
 const verifiedEmail = async (req, res) => {
   const { token } = req.body;
   if (!token) {
-    console.log("no token");
     return res.status(403);
   }
   try {
@@ -251,7 +249,6 @@ const verifiedEmail = async (req, res) => {
 const verifiedDelete = async (req, res) => {
   const { token } = req.body;
   if (!token) {
-    console.log("no token");
     return res.status(403);
   }
 

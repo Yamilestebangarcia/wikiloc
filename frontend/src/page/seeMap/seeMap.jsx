@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
-import CardRoute from "../../components/cardRute";
-import Footer from "../../components/footer";
-import Header from "../../components/header";
-import MapSee from "../../components/mapSee";
 import { useNavigate } from "react-router-dom";
 import { getPosition } from "../../utility/geolocation";
 
+import Footer from "../../components/footer";
+import Header from "../../components/header";
+import Spinner from "../../components/spinner";
+import MapSeeMap from "../../components/mapSeeMap";
+
+import styles from "./seeMap.module.css";
+import "leaflet/dist/leaflet.css";
+import PError from "../../components/pError";
+import CardSeeMap from "../../components/cardsSeeMap";
+import { useFechtSeeMap } from "../../service/useFetch";
+
 function seeMap() {
+  //navigation and token
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
 
+  //states
   const [ruteData, setRuteData] = useState(null);
   const [cardData, setCardData] = useState(null);
+  const [hoverCard, setHoverCard] = useState(null);
   const [err, setErr] = useState("");
 
   useEffect(async () => {
@@ -22,17 +32,13 @@ function seeMap() {
       dataGps = null;
     }
 
-    fetch("http://localhost:3001/app/seemap", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
+    useFechtSeeMap(
+      "http://localhost:3001/app/seemap",
+      { token },
+      setErr,
+      setRuteData
+    ).then((res) => {
+      if (res) {
         if (res.err) {
           if (res.err === "token no valido") {
             sessionStorage.removeItem("token");
@@ -54,40 +60,41 @@ function seeMap() {
           setCardData(dataCard);
           setRuteData(res);
         }
-      })
-      .catch((err) => {
-        setRuteData(null);
-        setErr("No se pudo conectar");
-        console.log(err);
-      });
+      } else {
+        sessionStorage.removeItem("token");
+        navigate("/");
+      }
+    });
   }, []);
 
   return (
     <>
       <Header />
-      <h2>buscar rutas en el mapa</h2>
+      <h2 className={styles.h2}>buscar rutas en el mapa</h2>
 
-      <div>
+      <>
         {ruteData ? (
-          <MapSee
-            mapCords={ruteData.mapCords}
-            ruteData={ruteData}
-            cardData={cardData}
-            setCardData={setCardData}
-          />
-        ) : (
-          <p>cargando..</p>
-        )}
-        {err ? <p>{err}</p> : null}
+          <>
+            <MapSeeMap
+              mapCords={ruteData.mapCords}
+              ruteData={ruteData}
+              cardData={cardData}
+              setCardData={setCardData}
+              hoverCard={hoverCard}
+              setHoverCard={setHoverCard}
+            />
+          </>
+        ) : null}
 
-        <div>
-          {cardData
-            ? cardData.map((ele) => {
-                return <CardRoute key={ele._id} data={ele} />;
-              })
-            : null}
-        </div>
-      </div>
+        <Spinner controlClass={!ruteData} />
+        <PError err={err} />
+
+        <CardSeeMap
+          cardData={cardData}
+          setHoverCard={setHoverCard}
+          classNameC={styles.cards}
+        />
+      </>
       <Footer />
     </>
   );

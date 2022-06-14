@@ -1,8 +1,5 @@
-import { useState } from "react";
-import Btn from "../../components/btn";
-import Footer from "../../components/footer";
-import Header from "../../components/header";
-import PError from "../../components/pError";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { paserXML } from "../../utility/paserXML.js";
 import {
   validationFile,
@@ -15,14 +12,27 @@ import {
   validationSlope,
 } from "../../utility/validation";
 import axios from "axios";
-import MapUpload from "../../components/mapUpload";
-import InputComp from "../../components/InputComp";
-import uniqid from "uniqid";
 
+import Btn from "../../components/btn";
+import Footer from "../../components/footer";
+import Header from "../../components/header";
+import PError from "../../components/pError";
+import PInfo from "../../components/Info";
+import InputComp from "../../components/InputComp";
+import FormLogin from "../../components/formLogin";
+import MapUpload from "../../components/mapUpload";
+
+import styles from "./updateFile.module.css";
+
+//creo la insatacia de fileReader
 const reader = new FileReader();
-const token = sessionStorage.getItem("token");
 
 function UploadFile() {
+  //token and navegation
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+
+  //states
   const [err, SetErr] = useState("");
   const [success, SetSuccess] = useState(null);
   const [gpx, SetGpx] = useState(false);
@@ -30,7 +40,6 @@ function UploadFile() {
     title: "",
     difficulty: "choose",
     description: "",
-    file: "",
   });
   const [className, SetClassname] = useState({
     title: false,
@@ -39,6 +48,10 @@ function UploadFile() {
     file: false,
   });
 
+  //refs
+  const ref = useRef();
+
+  //handler events
   const handleInputChange = (event) => {
     if (event.target.name === "title") {
       SetClassname({
@@ -66,7 +79,7 @@ function UploadFile() {
       [event.target.name]: event.target.value,
     });
   };
-
+  //Validation file
   const sendFile = (e) => {
     SetErr("");
 
@@ -91,6 +104,7 @@ function UploadFile() {
     };
   };
 
+  // validation form
   const submitData = (e) => {
     e.preventDefault();
     SetErr();
@@ -141,7 +155,11 @@ function UploadFile() {
     if (!gpx.firstcord || !validationCords(gpx.firstcord.lon)) {
       return SetErr("archivo no valido, altura max incorrecto");
     }
+    fecthAxios();
+  };
 
+  //fetch
+  function fecthAxios() {
     const myHeaders = new Headers();
     myHeaders.append("Content-type", "multipart/form-data");
 
@@ -160,6 +178,7 @@ function UploadFile() {
     dataForm.append("lat", gpx.firstcord.lat);
     dataForm.append("lon", gpx.firstcord.lon);
     dataForm.append("token", token);
+
     axios
       .post("http://localhost:3001/app/upload", dataForm)
       .then((res) => {
@@ -174,65 +193,93 @@ function UploadFile() {
           title: "",
           difficulty: "choose",
           description: "",
-          file: uniqid(),
         });
+        SetGpx(false);
+        ref.current.value = "";
       })
       .catch((err) => {
-        console.log();
+        if (err.response.status === 401) {
+          window.sessionStorage.removeItem("token");
+          navigate("/");
+          return () => {
+            unmounted = true;
+          };
+        }
+
         if (err.response === undefined) {
           SetErr("No se pudo conectar con el servidor");
         } else {
           SetErr(err.response.data.err);
         }
       });
-  };
+  }
 
   return (
     <>
       <Header></Header>
-      <h2>Subir ruta</h2>
-      <form encType="multipart/form-data">
+      <h2 className={styles.h2}>Subir ruta</h2>
+      <FormLogin encType="multipart/form-data">
         <InputComp
           value={data.title}
           handlerChange={handleInputChange}
           name="title"
           placeholder={"titulo de la ruta"}
-          className={className.title ? "correct" : "incorrect"}
+          controlClass={className.title}
         ></InputComp>
         <select
           name="difficulty"
           onChange={handleInputChange}
-          className={className.difficulty ? "correct" : "incorrect"}
+          className={
+            (className.difficulty ? styles.correct : styles.incorrect) +
+            " " +
+            styles.select
+          }
           value={data.difficulty}
         >
-          <option value="choose">elige la dificultad de la ruta</option>
-          <option value="facil">Facil</option>
-          <option value="media">Media</option>
-          <option value="dificil">Dificil</option>
+          <option className={styles.option} value="choose">
+            Elige la dificultad de la ruta
+          </option>
+          <option className={styles.option} value="facil">
+            Facil
+          </option>
+          <option className={styles.option} value="media">
+            Media
+          </option>
+          <option className={styles.option} value="dificil">
+            Dificil
+          </option>
         </select>
         <textarea
           name="description"
           onChange={handleInputChange}
-          className={className.description ? "correct" : "incorrect"}
+          className={
+            (className.description ? styles.correct : styles.incorrect) +
+            " " +
+            styles.textarea
+          }
           value={data.description}
         ></textarea>
-
-        <input
-          key={data.file}
+        <InputComp
+          refPro={ref}
           type="file"
           placeholder="Sube tu ruta"
-          onChange={sendFile}
+          handlerChange={sendFile}
           name="file"
-          className={className.file ? "correct" : "incorrect"}
-        ></input>
+          controlClass={className.file}
+        ></InputComp>
+
         <Btn text="enviar" click={submitData} state={!gpx}></Btn>
-      </form>
+      </FormLogin>
+
       <PError err={err}></PError>
-      <PError err={success}></PError>
+      <PInfo info={success}></PInfo>
 
       {gpx ? (
-        <MapUpload mapCords={gpx.firstcord} track={gpx.track}></MapUpload>
+        <>
+          <MapUpload mapCords={gpx.firstcord} track={gpx.track}></MapUpload>
+        </>
       ) : null}
+
       <Footer></Footer>
     </>
   );

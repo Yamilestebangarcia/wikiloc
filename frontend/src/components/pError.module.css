@@ -1,0 +1,24 @@
+.disabled {
+  display: none;
+}
+.err {
+  text-align: center;
+  font-size: 1.1rem;
+  background-color: var(--blanco);
+  padding: 6px 14px;
+  color: red;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+}
+.footer {
+  color: var(--err);
+  background-color: var(--footer);
+}
+.close {
+  margin-left: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}

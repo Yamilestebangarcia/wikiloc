@@ -1,55 +1,34 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { validationEmail, validationPass } from "../../utility/validation.js";
+import { UseFetchLoading } from "../../service/useFetch.jsx";
+
 import Btn from "../../components/btn.jsx";
 import H1 from "../../components/h1.jsx";
-
 import ComponentLink from "../../components/link.jsx";
 import PError from "../../components/pError.jsx";
-import { validationEmail, validationPass } from "../../utility/validation.js";
 import InputComp from "../../components/InputComp.jsx";
+import Spinner from "../../components/spinner.jsx";
+import FormLogin from "../../components/formLogin.jsx";
+
 function Login() {
+  //navegate
   const navigate = useNavigate();
 
+  //use state
   const [className, SetClassname] = useState({
     email: false,
     pass: false,
   });
   const [err, setErr] = useState();
-  const [loading, setLoadign] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState({
     email: "",
     pass: "",
   });
 
-  function fetchData(data) {
-    fetch("http://localhost:3001/login/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        setLoadign(false);
-        return res.json();
-      })
-      .then((res) => {
-        if (res.err) {
-          setErr(res.err);
-        }
-        if (res.token) {
-          window.sessionStorage.setItem("token", res.token);
-          window.sessionStorage.setItem("name", res.name);
-
-          navigate("/app");
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
+  //handle de state and validation
   const handleInputChange = (event) => {
     SetClassname({
       ...className,
@@ -63,35 +42,45 @@ function Login() {
       [event.target.name]: event.target.value,
     });
   };
-
-  const submitData = (event) => {
+  //submitValidation and fecht
+  const submitDataValidation = (event) => {
     event.preventDefault();
 
-    setLoadign(true);
+    setLoading(true);
     if (!validationEmail(data.email) || !validationPass(data.pass)) {
       setErr("email o password incorrecto");
+      setLoading(false);
     } else {
       setData({
         email: "",
         pass: "",
       });
-      fetchData(data);
+      SetClassname({
+        email: false,
+        pass: false,
+      });
+
+      UseFetchLoading(
+        "http://localhost:3001/login/",
+        data,
+        setLoading,
+        setErr
+      ).then((res) => {
+        if (res) {
+          window.sessionStorage.setItem("token", res.token);
+          window.sessionStorage.setItem("name", res.name);
+          navigate("/app/index");
+        }
+      });
     }
   };
 
   return (
     <>
       <H1 text="Login"></H1>
-      <form>
-        {/*  <Input
-          className={className.email ? "correct" : "incorrect"}
-          type="text"
-          placeholder="Email"
-          event={handleInputChange}
-          name="email"
-        ></Input> */}
+      <FormLogin>
         <InputComp
-          className={className.email ? "correct" : "incorrect"}
+          controlClass={className.email}
           type="text"
           placeholder="Email"
           handlerChange={handleInputChange}
@@ -99,28 +88,21 @@ function Login() {
           value={data.email}
         ></InputComp>
         <InputComp
-          className={className.pass ? "correct" : "incorrect"}
+          controlClass={className.pass}
           type="password"
           placeholder="Contraseña"
           handlerChange={handleInputChange}
           name="pass"
           value={data.pass}
         ></InputComp>
-        {/*      <Input
-          className={className.pass ? "correct" : "incorrect"}
-          type="password"
-          placeholder="Contraseña"
-          event={handleInputChange}
-          name="pass"
-        ></Input> */}
 
-        <Btn text="Enviar" click={submitData}></Btn>
-      </form>
+        <Btn text="Enviar" click={submitDataValidation}></Btn>
+        <PError err={err}></PError>
 
-      <ComponentLink text="¿Registrate?" url="/register"></ComponentLink>
-      <ComponentLink text="¿Olvidaste contraseña?" url="/reset"></ComponentLink>
-      <PError err={err}></PError>
-      {loading ? <PError err="cargando"></PError> : null}
+        <Spinner controlClass={loading}></Spinner>
+      </FormLogin>
+      <ComponentLink text="Registrate" url="/register"></ComponentLink>
+      <ComponentLink text="Olvidaste contraseña" url="/reset"></ComponentLink>
     </>
   );
 }

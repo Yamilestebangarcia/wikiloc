@@ -1,0 +1,7 @@
+.h2 {
+  text-align: center;
+  color: var(--verdeOscuro);
+  font-weight: 400;
+  font-size: 1.4rem;
+  margin-bottom: 35px;
+}

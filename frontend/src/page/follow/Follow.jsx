@@ -1,18 +1,36 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import MapFollow from "../../components/mapFollow";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getTrackMinElevCord } from "../../utility/paserXML";
 import { getWatchPosition } from "../../utility/geolocation";
-import Btn from "../../components/btn";
+import { useFetchFollow } from "../../service/useFetch";
+import { fullScreem } from "../../service/utility";
+
+import Spinner from "../../components/spinner.jsx";
+import MapFollow from "../../components/mapFollow";
+import iconGps from "../../assets/img/iconGps.svg";
+import iconFullScreen from "../../assets/img/screenFull.svg";
+import Nav from "../../components/nav";
+import Perror from "../../components/perror";
+import BtnMap from "../../components/btnMap";
+import LegendPosition from "../../components/legendPosition";
+
+import styles from "./follow.module.css";
 
 function Follow() {
+  //navigation ,params and token
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const idRute = searchParams.get("id");
   const token = window.sessionStorage.getItem("token");
+
+  //states
   const [track, setTrack] = useState();
   const [position, setPosition] = useState();
   const [full, setFull] = useState(undefined);
+  const [err, setErr] = useState();
+  const [loading, setLoading] = useState(true);
 
+  //get position
   function getPosition() {
     getWatchPosition()
       .then((res) => {
@@ -20,76 +38,66 @@ function Follow() {
       })
       .catch((err) => console.log(err));
   }
-  useEffect(() => {
+
+  //handle full screen
+  function changeFull() {
     if (full) {
-      document.querySelector(".leaflet-container").requestFullscreen();
+      setFull(false);
+    } else {
+      setFull(true);
     }
-    document.addEventListener("fullscreenchange", () => {
-      if (!document.fullscreenElement) {
-        setFull(false);
-      }
-    });
+  }
+
+  //change screen full
+  useEffect(() => {
+    fullScreem(full, setFull);
   }, [full]);
 
+  //fetch
   useEffect(() => {
-    const data = { idRute, token };
-    fetch("http://localhost:3001/app/viewTrack", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        return res.text();
-      })
-      .then((res) => {
-        return new window.DOMParser().parseFromString(res, "text/xml");
-      })
-      .then((res) => {
+    useFetchFollow(
+      "http://localhost:3001/app/viewTrack",
+      { idRute, token },
+      setLoading,
+      setErr
+    ).then((res) => {
+      if (res) {
         setTrack(getTrackMinElevCord(res));
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+      } else {
+        window.sessionStorage.removeItem("token");
+        navigate("/");
+      }
+    });
   }, []);
-  //  console.log(position);
+
   return (
     <>
-      {track ? (
-        <>
-          <MapFollow
-            mapCords={[track[0].lat, track[0].lon]}
-            track={track}
-            marker={position}
-            getPosition={getPosition}
+      {full ? null : <Nav controlClass={styles.nav}></Nav>}{" "}
+      {track && !err ? (
+        <MapFollow
+          full={full}
+          mapCords={[track[0].lat, track[0].lon]}
+          track={track}
+          position={position}
+        >
+          <BtnMap
+            onClick={getPosition}
+            src={iconGps}
+            classNameC={styles.btn}
+            alt={"Posicion Actual"}
           />
-          <Btn
-            click={() => {
-              setFull(true);
-            }}
-            text="pantalla completa"
+          <BtnMap
+            onClick={changeFull}
+            src={iconFullScreen}
+            classNameC={[styles.btn, styles.screenFull].join(" ")}
+            alt={"Pantalla Completa"}
           />
 
-          {position ? (
-            <>
-              <ul>
-                <li>
-                  Posicion:
-                  <ul>
-                    <li>{`lat ${position.latitude}`}</li>
-                    <li> {`lon ${position.longitude}`}</li>
-                  </ul>
-                </li>
-                <li>Precisión Posicion: {position.accuracy}</li>
-                <li>Altura: {position.altitude}</li>
-                <li>Precisión altura: {position.altitudeAccuracy}</li>
-                <li>Velocidad: {position.speed}</li>
-              </ul>
-            </>
-          ) : null}
-        </>
+          <LegendPosition position={position} classNameC={styles.position} />
+        </MapFollow>
       ) : null}
+      <Spinner controlClass={loading}></Spinner>
+      <Perror err={err} />
     </>
   );
 }

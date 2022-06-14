@@ -1,79 +1,133 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import CardRoute from "../../components/cardRute";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
+import CardsRoutes from "../../components/cardsRutes";
 import Header from "../../components/header";
-import MapSee from "../../components/mapSee";
+import MapSearch from "../../components/mapSearch";
+
+import PanelControlSearch from "../../components/PanelControlSearch";
+import Spinner from "../../components/spinner";
+import { useFetchIndexApp } from "../../service/useFetch";
+import { filterData } from "../../service/utility";
+
+import styles from "./search.module.css";
 
 function Search() {
+  //navigation ,params and token
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const search = searchParams.get("search");
   const token = window.sessionStorage.getItem("token");
 
-  const [ruteFind, setRuteFind] = useState();
+  //states
   const [mapCords, setMapCords] = useState();
+  const [data, setData] = useState();
   const [cardData, setCardData] = useState();
+  const [minMaxDis, setminMaxDis] = useState();
+  const [minMaxSlop, setminMaxSlop] = useState();
+  const [dataDifficulty, setDataDifficulty] = useState("todos");
+  const [dataControl, setDataControl] = useState({
+    distMax: null,
+    distMin: null,
+    slopeMax: null,
+    slopemin: null,
+    difficulty: [],
+  });
+  const [loading, setLoading] = useState(false);
+  const [hoverCard, setHoverCard] = useState(null);
 
-  useEffect(() => {
-    const data = { search, token };
-    fetch("http://localhost:3001/app/find", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.err) {
-          window.sessionStorage.removeItem("token");
-          navigate("/");
+  //get data for control panel
+  const getDataControl = (data) => {
+    let resultData = {};
+    for (let index = 0; index < data.length; index++) {
+      if (index === 0) {
+        resultData.difficulty = [data[index].difficulty];
+        resultData.distMax = data[index].distance;
+        resultData.distMin = data[index].distance;
+        resultData.slopeMax = data[index].slopePositive;
+        resultData.slopemin = data[index].slopePositive;
+      } else {
+        if (!resultData.difficulty.includes(data[index].difficulty)) {
+          resultData.difficulty.push(data[index].difficulty);
         }
+        if (data[index].distance > resultData.distMax) {
+          resultData.distMax = data[index].distance;
+        }
+        if (data[index].distance < resultData.distMin) {
+          resultData.distMin = data[index].distance;
+        }
+        if (data[index].slopePositive > resultData.slopeMax) {
+          resultData.slopeMax = data[index].slopePositive;
+        }
+        if (data[index].slopePositive < resultData.slopemin) {
+          resultData.slopemin = data[index].slopePositive;
+        }
+      }
+    }
+    // console.log(resultData);
+    setDataControl(resultData);
+  };
 
+  //filter data
+  useEffect(() => {
+    setCardData(filterData(data, minMaxDis, minMaxSlop, dataDifficulty));
+  }, [minMaxDis, minMaxSlop, dataDifficulty]);
+
+  //fetch
+  useEffect(() => {
+    setLoading(true);
+    useFetchIndexApp(
+      "http://localhost:3001/app/find",
+      { search, token },
+      setLoading
+    ).then((res) => {
+      if (res) {
         if (res.length !== 0) {
+          getDataControl(res);
+          setData(res);
           setCardData(res);
           setMapCords([res[0].lat, res[0].lon]);
-          setRuteFind(res);
         } else {
-          setRuteFind("no");
+          setCardData([]);
         }
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
+      } else {
+        window.sessionStorage.removeItem("token");
+        navigate("/");
+        return () => {
+          unmounted = true;
+        };
+      }
+    });
   }, [search]);
+
   return (
     <>
       <Header />
-      <h2> busquedas encontradas de {search}</h2>
+      <h2 className={styles.h2}> busquedas encontradas de {search}</h2>
 
-      {ruteFind ? (
-        ruteFind === "no" ? (
-          <p>No se han encontrado coincidencias</p>
-        ) : (
-          cardData.map((ele) => {
-            return <CardRoute data={ele} key={ele._id} />;
-          })
-        )
-      ) : (
-        <p>buscando...</p>
-      )}
+      <PanelControlSearch
+        dataControl={dataControl}
+        setDataDifficulty={setDataDifficulty}
+        setminMaxDis={setminMaxDis}
+        setminMaxSlop={setminMaxSlop}
+      />
 
-      {ruteFind ? (
-        ruteFind === "no" ? null : (
-          <MapSee
+      {cardData && mapCords ? (
+        <>
+          <MapSearch
             mapCords={mapCords}
-            ruteData={ruteFind}
+            ruteData={cardData}
             cardData={cardData}
             setCardData={setCardData}
+            hoverCard={hoverCard}
+            setHoverCard={setHoverCard}
           />
-        )
-      ) : (
-        <p>cargando mapa...</p>
-      )}
+        </>
+      ) : null}
 
+      <CardsRoutes cardData={cardData} setHoverCard={setHoverCard} />
+
+      <Spinner controlClass={loading} />
       <footer />
     </>
   );

@@ -4,8 +4,6 @@ import Register from "./page/register/Register";
 import IndexApp from "./page/indexApp/indexApp";
 import NotFound from "./page/notFound/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
-import AuthAut from "./components/authAut";
-import Reset from "./page/reset/reset";
 import ResetPass from "./page/resetPass/ResetPass";
 import DeleteVerified from "./page/deleteVerified/DeleteVerified";
 import UploadFile from "./page/uploadFile/UploadFile";
@@ -13,6 +11,28 @@ import SeeMap from "./page/seeMap/seeMap";
 import Search from "./page/search/search";
 import ViewRute from "./page/viewRute/viewrute";
 import Follow from "./page/follow/Follow";
+import "./index.css";
+import ChangePass from "./page/changePass/ChangePass";
+import Auth from "./components/Auth";
+/* import { Routes, Route } from "react-router-dom";
+import { lazy } from "react";
+const Login = lazy(() => import("./page/login/Login"));
+const Register = lazy(() => import("./page/register/Register"));
+const IndexApp = lazy(() => import("./page/indexApp/indexApp"));
+const NotFound = lazy(() => import("./page/notFound/NotFound"));
+const ProtectedRoute = lazy(() => import("./components/protectedRoute"));
+const ResetPass = lazy(() => import("./page/resetPass/ResetPass"));
+const DeleteVerified = lazy(() =>
+  import("./page/deleteVerified/DeleteVerified")
+);
+const UploadFile = lazy(() => import("./page/uploadFile/UploadFile"));
+const SeeMap = lazy(() => import("./page/seeMap/SeeMap"));
+const Search = lazy(() => import("./page/search/Search"));
+const ViewRute = lazy(() => import("./page/viewRute/ViewRute"));
+const Follow = lazy(() => import("./page/follow/Follow"));
+const ChangePass = lazy(() => import("./page/changePass/ChangePass"));
+import "./index.css";
+const Auth = lazy(() => import("./components/auth")); */
 
 function App() {
   return (
@@ -20,9 +40,9 @@ function App() {
       <Route
         path="/"
         element={
-          <AuthAut>
+          <Auth>
             <Login />
-          </AuthAut>
+          </Auth>
         }
       />
       <Route
@@ -66,7 +86,7 @@ function App() {
         }
       />
       <Route
-        path="/app"
+        path="/app/index"
         element={
           <ProtectedRoute>
             <IndexApp />
@@ -75,7 +95,8 @@ function App() {
       />
 
       <Route path="/register" element={<Register />} />
-      <Route path="/reset" element={<Reset />} />
+      <Route path="/reset" element={<ChangePass />} />
+
       <Route path="/resetPass" element={<ResetPass />} />
       <Route
         path="/verified"
@@ -83,8 +104,6 @@ function App() {
           <DeleteVerified
             method="POST"
             url="http://localhost:3001/login/verified"
-            msgSuccess="Usuario verificado"
-            msgErr="error al verificar"
             text="Verificando Contraseña"
           />
         }
@@ -95,8 +114,6 @@ function App() {
           <DeleteVerified
             method="DELETE"
             url="http://localhost:3001/login/delete"
-            msgSuccess="Usuario borrado"
-            msgErr="error al borrar"
             text="borrado Usuario"
           />
         }

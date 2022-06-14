@@ -1,0 +1,16 @@
+:root {
+  --blanco: white;
+  --negro: black;
+  --crema: #e9efc0;
+  --verdeClaro: #b4e197;
+  --verde: #83bd75;
+  --verdeOscuro: #4e944f;
+  --err: #ff0000;
+  --fontFamily: "Montserrat", sans-serif;
+  --loading: #e6e7deb5;
+  --footer: #2c2b29;
+}
+body {
+  font-family: var(--fontFamily);
+  padding-bottom: 190px;
+}

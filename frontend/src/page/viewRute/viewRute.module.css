@@ -1,0 +1,19 @@
+.h2 {
+  text-align: center;
+  color: var(--verdeOscuro);
+  font-weight: 400;
+  font-size: 1.4rem;
+}
+.btn {
+  margin: 40px;
+  display: flex;
+  justify-content: center;
+  align-self: center;
+}
+
+.icon {
+  background-color: blue;
+}
+.iconDisable {
+  display: none;
+}

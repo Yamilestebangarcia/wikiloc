@@ -1,0 +1,17 @@
+.btn {
+  font-family: var(--fontFamily);
+  padding: 6px 30px;
+  font-size: 1.1rem;
+  color: var(--blanco);
+  background-color: var(--verdeOscuro);
+  border: none;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  -moz-border-radius: 12px;
+  -ms-border-radius: 12px;
+  -o-border-radius: 12px;
+}
+.btn:hover {
+  color: var(--negro);
+  background-color: var(--verde);
+}

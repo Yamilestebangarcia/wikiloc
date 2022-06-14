@@ -1,15 +1,28 @@
 import { NavLink } from "react-router-dom";
-function Nav() {
+import styles from "./nav.module.css";
+function Nav({ controlClass }) {
   return (
-    <nav>
+    <nav className={controlClass ? controlClass : styles.nav}>
       <NavLink
-        className={(isActive) => "nav-link" + (!isActive ? " unselected" : "")}
+        className={({ isActive }) =>
+          styles.navLink + " " + (isActive ? styles.active : null)
+        }
+        to="/app/index"
+      >
+        home
+      </NavLink>
+      <NavLink
+        className={({ isActive }) =>
+          styles.navLink + " " + (isActive ? styles.active : null)
+        }
         to="/app/seemap"
       >
         Ver mapa
       </NavLink>
       <NavLink
-        className={(isActive) => "nav-link" + (!isActive ? " unselected" : "")}
+        className={({ isActive }) =>
+          styles.navLink + " " + (isActive ? styles.active : null)
+        }
         to="/app/upload"
       >
         Subir ruta

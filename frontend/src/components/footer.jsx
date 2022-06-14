@@ -1,59 +1,65 @@
-import Btn from "./btn";
-import PError from "./pError";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useFetchDeleteUSer } from "../service/useFetch";
+import Btn from "./btn";
+import PError from "./pError";
+import Spinner from "./spinner";
+import PInfo from "./Info";
+import styles from "./footer.module.css";
 
 function Footer() {
+  //navegate
   const navigate = useNavigate();
-  function close() {
-    window.sessionStorage.removeItem("token");
-    navigate("/");
-  }
-  function deleteUser() {
-    const token = window.sessionStorage.getItem("token");
-    setLoading(true);
 
-    console.log(token === "null");
-    if (!token || token === "undefined" || token === "null") {
-      return close();
-    }
-    fetch("http://localhost:3001/login/deleteEmail", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token }),
-    })
-      .then((res) => {
-        setLoading(false);
-        if (res.status !== 200) {
-          return res.json();
-        } else {
-          window.sessionStorage.setItem("token", null);
-          setRemuve(true);
-        }
-      })
-      .then((res) => {
-        if (res !== undefined) {
-          setErr(res.err);
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }
-
+  //state
   const [err, setErr] = useState();
   const [loading, setLoading] = useState(false);
   const [remove, setRemuve] = useState(false);
 
+  //Elimino el token y redirijo
+  function close() {
+    window.sessionStorage.removeItem("token");
+    navigate("/");
+  }
+  //borra usuario
+  function deleteUser() {
+    const token = window.sessionStorage.getItem("token");
+    setLoading(true);
+
+    if (!token || token === "undefined" || token === "null") {
+      return close();
+    }
+
+    useFetchDeleteUSer(
+      "http://localhost:3001/login/deleteEmail",
+      { token },
+      setLoading,
+      setErr
+    ).then((res) => {
+      if (res) {
+        window.sessionStorage.setItem("token", null);
+        setRemuve("Se ha mandado un correo a tu email");
+      }
+    });
+  }
+
   return (
-    <footer>
-      <Btn click={deleteUser} text="Eliminar usuario"></Btn>
-      {remove ? <p>Se ha mandado un correo a tu email </p> : null}
-      <PError err={err}></PError>
-      {loading ? <PError err="cargando"></PError> : null}
-    </footer>
+    <>
+      <Spinner controlClass={loading} />
+      <footer className={styles.footer}>
+        <div className={styles.info}>
+          <p className={styles.copy}>© 2021 Yamil Esteban Garcia</p>
+          <Btn
+            click={deleteUser}
+            text="Eliminar Usuario"
+            controlClass={styles.cerrar}
+          ></Btn>
+          <PInfo info={remove} ControlClass={true}></PInfo>
+
+          <PError err={err} controlClass={true}></PError>
+        </div>
+      </footer>
+    </>
   );
 }
 export default Footer;
