@@ -9,6 +9,8 @@
   --fontFamily: "Montserrat", sans-serif;
   --loading: #e6e7deb5;
   --footer: #2c2b29;
+  --star: #ffff01;
+  --starDisable: #7a7a71;
 }
 body {
   font-family: var(--fontFamily);

@@ -1,0 +1,19 @@
+.starF,
+.star {
+  stroke: black;
+  fill: var(--star);
+  display: inline-block;
+  width: 1.2rem;
+  margin-left: 10px;
+
+  margin-top: 2px;
+  vertical-align: bottom;
+}
+.disableF,
+.disable {
+  fill: var(--starDisable);
+}
+
+.disableHover {
+  fill: var(--star);
+}

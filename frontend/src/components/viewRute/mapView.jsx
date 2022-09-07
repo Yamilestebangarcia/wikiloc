@@ -8,7 +8,7 @@ import {
   useMap,
   useMarket,
   usePolyline,
-} from "../service/leaflet";
+} from "../../service/leaflet";
 
 function MapView({ mapCords, track, setPoint, pointChart }) {
   const geojson = { type: "FeatureCollection", features: [] };

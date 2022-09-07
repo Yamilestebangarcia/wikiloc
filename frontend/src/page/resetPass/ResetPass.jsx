@@ -8,7 +8,7 @@ import PError from "../../components/pError";
 import ComponentLink from "../../components/link";
 import Btn from "../../components/btn";
 import InputComp from "../../components/InputComp.jsx";
-import FormLogin from "../../components/formLogin";
+import FormLogin from "../../components/formLoginM";
 
 function ResetPass() {
   //params, token and navigate

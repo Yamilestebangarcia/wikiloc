@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
-import { getPosition } from "../utility/geolocation";
+import { getPosition } from "../../utility/geolocation";
 
 import styles from "./mapSeeMap.module.css";
 import "leaflet/dist/leaflet.css";
-import PError from "./pError";
-import { useLeafletEvent, useMap } from "../service/leaflet";
+import PError from "../pError";
+import { useLeafletEvent, useMap } from "../../service/leaflet";
 
 function MapSeeMap({
   mapCords,

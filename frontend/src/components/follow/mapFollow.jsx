@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import flechaGps from "./../assets/img/flechaGps.svg";
+import flechaGps from "../../assets/img/flechaGps.svg";
 import styles from "./MapFollow.module.css";
 import "leaflet/dist/leaflet.css";
-import { useMap, useMarket, usePolyline, useScale } from "../service/leaflet";
+import {
+  useMap,
+  useMarket,
+  usePolyline,
+  useScale,
+} from "../../service/leaflet";
 
 function MapFollow({ mapCords, track, position, full, children }) {
   //creo la polyline

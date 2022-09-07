@@ -23,6 +23,18 @@ const RutaSchema = new Schema(
         ref: "User",
       },
     ],
+    calification: [
+      {
+        value: {
+          type: Number,
+          required: false,
+        },
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
   },
   {
     timestamps: true,

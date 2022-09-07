@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTrackMinElevCord } from "../../utility/paserXML";
 import { useFetchFollow, UseFetchLoading } from "../../service/useFetch";
-import Header from "../../components/header";
+import Header from "../../components/header/header";
 import Footer from "../../components/footer";
 import Btn from "../../components/btn";
 import Spinner from "../../components/spinner";
-import MapView from "../../components/mapView";
-
-import styles from "./viewRute.module.css";
-import CardView from "../../components/cardView";
+import MapView from "../../components/viewRute/mapView";
+import CardView from "../../components/viewRute/cardView";
 import PError from "../../components/pError";
+import PInfo from "../../components/Info";
+import styles from "./viewRute.module.css";
 
 function ViewRute() {
   //navigation params and token
@@ -27,6 +27,7 @@ function ViewRute() {
   const [pointChart, setpointChart] = useState();
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState();
+  const [info, setInfo] = useState();
 
   //fecht
   useEffect(() => {
@@ -87,12 +88,17 @@ function ViewRute() {
             track={track}
             point={point}
             setpointChart={setpointChart}
+            token={token}
+            idRute={idRute}
+            setErr={setErr}
+            setInfo={setInfo}
           />
         </>
       ) : null}
 
       <Spinner controlClass={loading}></Spinner>
       <PError err={err} />
+      <PInfo info={info} />
 
       <Footer></Footer>
     </>

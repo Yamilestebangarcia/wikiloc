@@ -1,5 +1,8 @@
-import styles from "./pError.module.css";
+import { memo } from "react";
+
 import close from "./../assets/img/close.svg";
+
+import styles from "./pError.module.css";
 function PError({ err, controlClass, setErr }) {
   return (
     <p
@@ -21,4 +24,4 @@ function PError({ err, controlClass, setErr }) {
     </p>
   );
 }
-export default PError;
+export default memo(PError);

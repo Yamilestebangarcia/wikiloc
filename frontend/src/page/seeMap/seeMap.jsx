@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { getPosition } from "../../utility/geolocation";
 
 import Footer from "../../components/footer";
-import Header from "../../components/header";
+import Header from "../../components/header/header";
 import Spinner from "../../components/spinner";
-import MapSeeMap from "../../components/mapSeeMap";
+import MapSeeMap from "../../components/seeMap/mapSeeMap";
 
 import styles from "./seeMap.module.css";
 import "leaflet/dist/leaflet.css";
 import PError from "../../components/pError";
-import CardSeeMap from "../../components/cardsSeeMap";
+import CardSeeMap from "../../components/seeMap/cardsSeeMap";
 import { useFechtSeeMap } from "../../service/useFetch";
 
 function seeMap() {

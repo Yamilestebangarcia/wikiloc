@@ -18,4 +18,8 @@ export const messageError = {
     err: "Descripcion , titulo o dificultad incorrecta",
   },
   fileData: { err: "datos del archivo incorrectos" },
+  Calification: { err: "Esta ruta ya ha sido calificada" },
+  CalificationFormat: { err: "LA calificacion debe ser un numero entre 0 y 4" },
+  ruteNotExist: { err: "La ruta no existe" },
+  description: { err: "Descricion incorrecta minimo 2 caracteres" },
 };

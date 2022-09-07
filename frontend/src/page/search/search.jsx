@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import CardsRoutes from "../../components/cardsRutes";
-import Header from "../../components/header";
-import MapSearch from "../../components/mapSearch";
+import CardsRoutes from "../../components/seeMap/cardsRutes";
+import Header from "../../components/header/header";
+import MapSearch from "../../components/search/mapSearch";
 
-import PanelControlSearch from "../../components/PanelControlSearch";
+import PanelControlSearch from "../../components/search/PanelControlSearch";
 import Spinner from "../../components/spinner";
 import { useFetchIndexApp } from "../../service/useFetch";
 import { filterData } from "../../service/utility";

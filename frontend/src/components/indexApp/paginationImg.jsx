@@ -1,4 +1,4 @@
-import imgNext from "../../public/next.svg";
+import imgNext from "../../../public/next.svg";
 
 function PaginationImg({ nextPage, classNameC, alt, id }) {
   {

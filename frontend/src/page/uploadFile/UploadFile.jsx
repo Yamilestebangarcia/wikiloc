@@ -15,12 +15,12 @@ import axios from "axios";
 
 import Btn from "../../components/btn";
 import Footer from "../../components/footer";
-import Header from "../../components/header";
+import Header from "../../components/header/header";
 import PError from "../../components/pError";
 import PInfo from "../../components/Info";
 import InputComp from "../../components/InputComp";
-import FormLogin from "../../components/formLogin";
-import MapUpload from "../../components/mapUpload";
+import FormLogin from "../../components/formLoginM";
+import MapUpload from "../../components/uploadFile/mapUpload";
 
 import styles from "./updateFile.module.css";
 
@@ -258,6 +258,7 @@ function UploadFile() {
             styles.textarea
           }
           value={data.description}
+          placeholder={"Descripcion de la ruta"}
         ></textarea>
         <InputComp
           refPro={ref}

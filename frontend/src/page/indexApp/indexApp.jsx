@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useFetchIndexApp } from "../../service/useFetch";
 
 import Footer from "../../components/footer";
-import Header from "../../components/header";
+import Header from "../../components/header/header";
 import PError from "../../components/pError";
 import Spinner from "../../components/spinner";
-import Select from "../../components/selectPagination";
-import CardsIndex from "../../components/cardsIndex";
-import Pagination from "../../components/pagination";
+import Select from "../../components/indexApp/selectPagination";
+import CardsIndex from "../../components/indexApp/cardsIndex";
+import Pagination from "../../components/indexApp/pagination";
 
 import styles from "./indexApp.module.css";
 
@@ -51,6 +51,7 @@ function IndexApp() {
         if (res.err) {
           setErr("No se pudo conectar a la base de datos");
         }
+        console.log(res);
         setData(res);
       } else {
         window.sessionStorage.removeItem("token");
@@ -107,6 +108,7 @@ function IndexApp() {
         if (res.err) {
           setErr("No se pudo conectar a la base de datos");
         }
+
         setData({ ...res, elements: data.elements });
       } else {
         window.sessionStorage.removeItem("token");

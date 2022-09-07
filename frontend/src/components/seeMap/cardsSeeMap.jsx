@@ -1,4 +1,4 @@
-import PInfo from "./Info";
+import PInfo from "../Info";
 import CardRoute from "./cardRute";
 
 function CardSeeMap({ cardData, setHoverCard, classNameC }) {

@@ -6,13 +6,13 @@ import { useFetchFollow } from "../../service/useFetch";
 import { fullScreem } from "../../service/utility";
 
 import Spinner from "../../components/spinner.jsx";
-import MapFollow from "../../components/mapFollow";
+import MapFollow from "../../components/follow/mapFollow";
 import iconGps from "../../assets/img/iconGps.svg";
 import iconFullScreen from "../../assets/img/screenFull.svg";
 import Nav from "../../components/nav";
 import Perror from "../../components/perror";
-import BtnMap from "../../components/btnMap";
-import LegendPosition from "../../components/legendPosition";
+import BtnMap from "../../components/follow/btnMap";
+import LegendPosition from "../../components/follow/legendPosition";
 
 import styles from "./follow.module.css";
 

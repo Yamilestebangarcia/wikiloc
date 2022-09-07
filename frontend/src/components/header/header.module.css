@@ -40,15 +40,7 @@
   align-items: center;
   justify-content: center;
 }
-.inputSearch {
-  margin-right: 30px;
-  border-bottom: 2px solid var(--verdeOscuro);
-}
-.search {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+
 .nav {
   display: flex;
   flex-direction: column;

@@ -32,7 +32,6 @@ function useFetchRegister(url, data, setLoading, setErr) {
     body: JSON.stringify(data),
   })
     .then((res) => {
-      console.log(res.status);
       if (!res.ok) {
         return res.json();
       } else {
@@ -228,6 +227,73 @@ function useFechtSeeMap(url, data, setErr, setRuteData) {
       setRuteData(null);
     });
 }
+function useFetchSetCalification(url, data, setErr) {
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((res) => {
+      if (res.err) {
+        setErr(res.err);
+      } else {
+        return res;
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+}
+
+function useFetchSetComents(url, data, setErr) {
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((res) => {
+      if (res.err) {
+        setErr(res.err);
+      } else {
+        return true;
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+}
+function useFetchGetComents(url, data, setErr) {
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((res) => {
+      if (res.err) {
+        setErr(res.err);
+      } else {
+        return res;
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+}
 
 export {
   UseFetchLoading,
@@ -238,4 +304,7 @@ export {
   useFetchIndexApp,
   useFetchFollow,
   useFechtSeeMap,
+  useFetchSetCalification,
+  useFetchSetComents,
+  useFetchGetComents,
 };

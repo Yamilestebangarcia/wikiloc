@@ -1,7 +1,16 @@
 import Chart from "./chart";
-
+import CommentCalificationRute from "./commentCalificationRute";
 import styles from "./cardView.module.css";
-function CardView({ mapCords, track, point, setpointChart }) {
+function CardView({
+  mapCords,
+  track,
+  point,
+  setpointChart,
+  setErr,
+  token,
+  idRute,
+  setInfo,
+}) {
   return (
     <div className={styles.card}>
       <p className={styles.h2}>{mapCords.description}</p>
@@ -23,6 +32,12 @@ function CardView({ mapCords, track, point, setpointChart }) {
         <li>fecha: {mapCords.date}</li>
         <li>Pertenece a: {mapCords.userName}</li>
       </ul>
+      <CommentCalificationRute
+        idRute={idRute}
+        token={token}
+        setErr={setErr}
+        setInfo={setInfo}
+      />
     </div>
   );
 }

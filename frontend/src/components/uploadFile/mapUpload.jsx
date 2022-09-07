@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useMap, usePolyline } from "../service/leaflet";
+import { useMap, usePolyline } from "../../service/leaflet";
 
 import styles from "./mapUpload.module.css";
 

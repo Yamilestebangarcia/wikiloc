@@ -14,6 +14,7 @@ import jwt from "jsonwebtoken";
 import "../utility/dotenv.js";
 import Rute from "../db/models/ruta.js";
 import User from "../db/models/user.js";
+import Comments from "../db/models/comments.js";
 import { uploadMulter, urlUpload } from "../utility/uploadFile.js";
 import path from "path";
 
@@ -268,23 +269,8 @@ const index = async (req, res) => {
   } catch (error) {
     return res.status(401).json(messageError.Token);
   }
-  try {
-    /*    const findRutes = await Rute.find(
-      {
-        user: decoded.id,
-      },
-      {
-        difficulty: 1,
-        description: 1,
-        title: 1,
-        distance: 1,
-        slopePositive: 1,
-        lat: 1,
-        lon: 1,
-        date: 1,
-      }
-    ); */
 
+  try {
     let findRutes;
     if (skip) {
       findRutes = await Rute.find(
@@ -307,6 +293,7 @@ const index = async (req, res) => {
           _id: -1,
         })
         .limit(limit);
+      console.log(findRutes);
       return res.status(200).json({ rute: findRutes, skip });
     } else {
       const skip = 0;
@@ -337,10 +324,155 @@ const index = async (req, res) => {
           _id: -1,
         })
         .limit(limit);
+
       return res.status(200).json({ rute: findRutes, skip, elements });
     }
   } catch (error) {
     return res.status(500).json(messageError.DataBase);
   }
 };
-export { upload, seeMap, findRute, view, viewTrack, index };
+const calification = async (req, res) => {
+  const { token } = req.body;
+  const { calification: calif } = req.body;
+  const { idRute } = req.body;
+  if (!token) {
+    return res.status(401).json(messageError.Token);
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+    if (calif !== null) {
+      if (calif < 0 || calif > 5) {
+        return res.status(401).json(messageError.CalificationFormat);
+      }
+    }
+
+    const rute = await Rute.findById(idRute, {
+      calification: 1,
+      numbreCalification: 1,
+      totalCalification: 1,
+    });
+
+    let exist = false;
+    let calificationBd = null;
+    let calificacionTotalBd = 0;
+    for (let index = 0; index < rute.calification.length; index++) {
+      if (rute.calification[index].user._id.toString() === decoded.id) {
+        calificationBd = rute.calification[index].value;
+        exist = true;
+      }
+
+      calificacionTotalBd += rute.calification[index].value;
+    }
+
+    if (calif === null) {
+      console.log(calificationBd);
+      return res.status(200).json({
+        calification: calificationBd,
+        calificacionTotal: Math.round(
+          calificacionTotalBd / rute.calification.length
+        ),
+      });
+    }
+    if (exist) {
+      return res.status(401).json(messageError.Calification);
+    }
+    rute.calification = { value: parseInt(calif) + 1, user: decoded.id };
+    rute.save();
+    res.status(200);
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
+  }
+};
+
+const setComents = async (req, res) => {
+  const { token } = req.body;
+  const { idRute } = req.body;
+  const { description } = req.body;
+
+  if (!token) {
+    return res.status(401).json(messageError.Token);
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+
+    const rute = await Rute.findById(idRute);
+    if (!rute) {
+      return res.status(401).json(messageError.ruteNotExist);
+    }
+
+    if (!validationDescription(description)) {
+      return res.status(401).json(messageError.description);
+    }
+
+    const coment = Comments({
+      rute: idRute,
+      autor: decoded.id,
+      description: description,
+    });
+    coment.save();
+
+    res.status(200).json({ mensage: "enviado" });
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
+  }
+};
+
+const getComents = async (req, res) => {
+  const { token } = req.body;
+  const { idRute } = req.body;
+
+  if (!token) {
+    return res.status(401).json(messageError.Token);
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.secret);
+
+    if (!decoded.id) {
+      return res.status(401).json(messageError.Token);
+    }
+
+    const comments = await Comments.find({ rute: idRute }).select({
+      description: 1,
+      autor: 1,
+    });
+
+    const data = [];
+    for (let index = 0; index < comments.length; index++) {
+      const name = await User.findById(comments[index].autor).select({
+        name: 1,
+        _id: 0,
+      });
+      data.push({
+        id: comments[index].id,
+        description: comments[index].description,
+        name: name.name,
+      });
+    }
+
+    res.status(200).json({ data: data });
+  } catch (error) {
+    return res.status(401).json(messageError.Token);
+  }
+};
+
+export {
+  upload,
+  seeMap,
+  findRute,
+  view,
+  viewTrack,
+  index,
+  calification,
+  setComents,
+  getComents,
+};

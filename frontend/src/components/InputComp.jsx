@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import styles from "./inputComp.module.css";
 function InputComp({
   refPro,

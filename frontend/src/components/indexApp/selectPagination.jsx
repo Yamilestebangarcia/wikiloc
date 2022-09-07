@@ -10,7 +10,6 @@ function Select({ changeLimit, classNameC }) {
         <option value="12">12</option>
         <option value="14">14</option>
       </select>
-      ;
     </>
   );
 }

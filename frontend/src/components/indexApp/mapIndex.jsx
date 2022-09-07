@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMap, useMarket, useLeafletEvent } from "../service/leaflet";
+import { useMap, useMarket, useLeafletEvent } from "../../service/leaflet";
 
 import styles from "./mapIndex.module.css";
 
